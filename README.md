@@ -153,6 +153,80 @@ Save downloaded pdfs in this folder, if it doesn't exist yet, it will be created
 Print this list of commands;
 
 ## Structure of the program, Modularity and Future work
-Here is an UML diagram of the class structure of the program:
+Here is an UML diagram of the class structure of the program (I simply draw it as text, because using an actual UML editor seemed too hard):
 
-As you see, the IMonitor and ITable interfaces makes it easy to replace the current 
+
+
+
+
+
+
+
+
+
+
+                                                                          |<<class PDFDocument>>                |
+                                                                          |-------------------------------------|___implements____\ |<<.NET IComparable<PDFDocument>>>   |
+                                                                          |+name : string                       |                 / |====================================|
+                                                                          |+startMillis : ulong                 |                   |+CompareTo(PDFDocument or null):bool|
+           |<<Interface: IReport>>                        |               |+stopMillis  : ulong                 |
+           |==============================================|               |+status      : enum                  |
+           |+getData(out string name,   :threadsafe getter|               |+ datasize   : int                   |
+           |     out ulong startMillis,                   |/__implements__|+ data       : byte[]                |
+           |     out ulong stopMillis                     |\              |+ url        : string                |
+           |     out enum Status                          |               |- fallback   : string                |
+           |     out int datasize                         |               |-------------------------------------|
+           |     out string error)                        |               |+getFallback(): string or null       |
+                           /:\                                                            /|\ *
+                            :                                                              |
+                            :                                                           Owns 0 or more
+                            :                                                             /=\ 1
+                            :                                                             \=/
+                         depends on                             |<<Class: Download manager>>                                                               |
+                         and uses                               |------------------------------------------------------------------------------------------|
+                            :                                   |-MaxThreas    : positive int                                                              |
+     |<<Interface: IMonitor>>                 |                 |-Timeout      : positive int                                                              |
+     |========================================|                 |-MaxDownloads : int (negative for all)                                                    |
+     |+Display(stopwatch) : Async display task|                 |-OutputFolder : filepath                                                                  |
+     |+SetReport(List of IReport): Set data   |/..depends.on....|------------------------------------------------------------------------------------------|
+     |                             for display|\  and uses      |+DownloadManager(MaxThreads,                                                              |
+     |+Stop() : void                          |                 |                    Timeout,                                                              |
+     |+setTitle: void                         |                 |               MaxDownloads,                                                              |               |<<Interface: ITable>>               |
+                                   /|\                          |               Outputfolder) : constructor                                                |               |====================================|
+                                    |                           |-CheckSave(PDFdocument) : Async task returning a new PDFDocument to load or null          |..Depends on..\|+getCol(string header): string[]    |
+                                    |                           |-download(in: Semaphore,                                                                  |              /|+AddCol(string header,string[]): void
+                                    |                           |in: PDFdocument,                                                                          |               |+Save()                        : void
+                                    |                           |in: HttpClient,                                                                           |               
+                                 Implements                     |out: List of Check and save tasks) : Async task returning a new PDFDocument to load or null                   /|\ 
+                                    |                           |+Download(in ITable urls, inout ITable Metadata, inout IMonitor monitor)                  |                    |
+                                    |                           |------------------------------------------------------------------------------------------|                  Implements
+                                    |                                                                                                                                           |
+                                    |
+                      |<<Class: ConsoleMonitor>>               |                                                                                               |<<ExcelTable>>            |
+                      |----------------------------------------|                                                                                               |--------------------------|
+                      |+RefreshMillis      : int               |                                                                                               |-package : ExcelPackage   |
+                      |-shouldstop         : bool              |                                                                                               |-address : filepath       |
+                      |-Title              : string            |                                                                                               |-writable: bool           |
+                      |-Reports            : List<IReport>     |                                                                                               |-headers : dictionary     |
+                      |+setTitle: void                         |
+                                     /+\
+                                     \+/
+                                      |
+                                    Contains private class
+                                      |
+                                     \|/
+                      |<<Class CompareErrors>>|
+                      |=======================|
+                                      :
+                               Implements
+                                     \:/
+                      |<<.NET interface IComparer<(ulong,string)> >>                      |
+                      |===================================================================|
+                      |+Compare((ulong,string) TimeErrorA,(ulong,string) TimeErrorB ) : int
+
+
+
+
+
+
+As you see, the IMonitor and ITable interfaces makes it easy to expand the program, if you should want to load other dataformats, like XML, CSV or anything else. Alternatively, the ConsoleMonitor could easily be replaced by a GUI or web-application. All this could be done without modifying the DownloadManager in any way.
