@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BetterPDFDownloader": {
+      "commandName": "Project",
+      "commandLineArgs": "maxdownloads 100"
+    }
+  }
+}
