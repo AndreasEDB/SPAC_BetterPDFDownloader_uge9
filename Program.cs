@@ -16,8 +16,11 @@ class Program
         
         //Defaults
         int MaxDownloads = -1;//-1 means download all
-        uint MaxThreads = 400;//This only applies to DownloadThreads
+        uint MaxThreads = 50;//This only applies to DownloadThreads
         bool ForceReload = false;//Delete Metedata file
+        uint Timeout = 100;
+
+        //In this program, I didn't have time to implement this, use MaxThreads instead.
         uint MaxBandwidth = 300;//Largest number of Mbit per second allowed
         string Metadata_file = "Metadata2017_2020.xlsx";
         string Url_file = "GRI_2017_2020.xlsx";
@@ -36,11 +39,12 @@ class Program
                 case "help":
                     Console.WriteLine("Run with the following arguments:");
                     Console.WriteLine("threads int [sets max threads for Download task (default 50)]");
-                    Console.WriteLine("bandwidth uint [sets max MBits/second (default 300)]");
-                    Console.WriteLine("maxdownloads uint [only attempt this manye downloads (continue from where we left off) (default unlimited)]");
+                    Console.WriteLine("maxdownloads int [only attempt this many downloads (continue from where we left off) (default unlimited)]");
+                    Console.WriteLine("timeout int [timeout for individual connections in seconds, smaller number makes program faster, but more data will be lost]");
                     Console.WriteLine("force [do not skip already downloaded files, (default do not skip)]");
                     Console.WriteLine($"metadata filename [use another excel file as metadata (default { Metadata_file})]");
                     Console.WriteLine($"data filename [load urls from another excel file (default {Url_file})]");
+                    Console.WriteLine($"output foldername [save pdf's here, will be creted if not existing (default {Folder})]");
                     return;//Stop the program, so the user has time to read this
                 case "data":
                     //Test if the next argument is within range
@@ -55,15 +59,15 @@ class Program
                 case "metadata":
                     if (i + 1 < args.Length)
                     {
-                        ++i;
                         Metadata_file = args[i + 1];
+                        ++i;
                     }
                     break;
                 case "output":
                     if (i + 1 < args.Length)
                     {
-                        ++i;
                         Folder = args[i + 1];
+                        ++i;
                     }
                     break;
 
@@ -88,6 +92,12 @@ class Program
                 case "threads":
                     if (i + 1 >= args.Length || !uint.TryParse(args[i + 1], out MaxThreads) || MaxThreads < 1)
                         MaxThreads = 50;
+                    else
+                        ++i;
+                    break;
+                case "timeout":
+                    if (i + 1 >= args.Length || !uint.TryParse(args[i + 1], out Timeout) || Timeout< 1)
+                        Timeout = 50;
                     else
                         ++i;
                     break;
@@ -185,7 +195,7 @@ class Program
 
         //Now start the manager and monitor
         ConsoleMonitor monitor = new ConsoleMonitor(1000);//Refresh roughly every second
-        DownloadManager manager = new DownloadManager(MaxThreads, MaxBandwidth,MaxDownloads,Folder);
+        DownloadManager manager = new DownloadManager(MaxThreads, MaxBandwidth,MaxDownloads,Folder,Timeout);
 
         await manager.Download(urls, metadata,monitor);
 

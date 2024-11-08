@@ -227,9 +227,9 @@ namespace BetterPDFDownloader
 
             if (result != 0) return result;
             else if (other._Fallback_url == null && _Fallback_url != null)
-                return 1;
-            else if (other._Fallback_url != null && _Fallback_url == null)
                 return -1;
+            else if (other._Fallback_url != null && _Fallback_url == null)
+                return 1;
             else
                 return 0;
         }

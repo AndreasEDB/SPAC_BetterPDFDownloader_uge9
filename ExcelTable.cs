@@ -85,11 +85,16 @@ namespace BetterPDFDownloader
             {
                 //IF we get here, we know the worksheet is not null! (because otherwise the Headers list would be empty)
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                int rows = worksheet.Dimension.Rows;
+
+                int Oldrows;
+                //Check how many rows already are in this column
+                for (Oldrows  = 1; Oldrows<worksheet.Dimension.Rows; ++Oldrows)
+                    if (worksheet.Cells[Oldrows+1, i].Text.Length == 0)
+                        break;
                 
                 for (int j = 1; j <= data.Length; j++)
                     //Base 1 indexing, which excel uses, is annoying to combine with base 0 which C# uses, but I have no choice
-                    worksheet.Cells[j+rows, i].Value=data[j-1];
+                    worksheet.Cells[j+Oldrows, i].Value=data[j-1];
             }
             else
             {

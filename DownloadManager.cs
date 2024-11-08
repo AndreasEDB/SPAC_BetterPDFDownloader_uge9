@@ -8,13 +8,18 @@ namespace BetterPDFDownloader
     internal class DownloadManager
     {
         private uint MaxThreads;
+
+        //Doesn't do anything in this version of the program, use maxThreads instead
         private uint MaxBandwidth;
+
+        private uint Timeout;//Time out of connection in seconds
         private int MaxDownloads;//-1 indicates all
         private string OutputFolder;
 
         //Set up basic user settings
-        public DownloadManager(uint maxThreads, uint maxBandwidth, int maxDownloads, string outputFolder)
+        public DownloadManager(uint maxThreads, uint maxBandwidth, int maxDownloads, string outputFolder,uint timeout)
         {
+            Timeout=timeout;
             MaxThreads = maxThreads;
             MaxBandwidth = maxBandwidth;
             MaxDownloads = maxDownloads;
@@ -134,6 +139,8 @@ namespace BetterPDFDownloader
         public async Task Download(ITable url_table, ITable metadata_table, IMonitor monitor)
         {
             HttpClient Client = new HttpClient();
+            Client.Timeout = TimeSpan.FromSeconds(Timeout);
+       
             //This clock is shared between us and the IMonitor
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -198,7 +205,7 @@ namespace BetterPDFDownloader
                 Downloads = new();
                 CheckAndSave = new();
 
-                foreach (var document in resDownloads)
+                foreach (var document in resDownloads.Concat(resCheck))
                 {
                     if (document!=null)
                     {
@@ -241,13 +248,32 @@ namespace BetterPDFDownloader
             metadata_table.AddCol("Fallback", new_is_fallback);
             metadata_table.AddCol("Downloaded", new_statuses);
             metadata_table.AddCol("Error", new_errors);
-            metadata_table.Save();
+
+            //Print this at the end, after the display has closed
+            string excelerror="";
+
+            try
+            {
+                metadata_table.Save();
+            }
+            catch (Exception e)
+            {
+                monitor.setTitle("EXCEL FAILED TO SAVE");
+                excelerror = e.Message;
+
+            }
             sw.Stop();
             monitor.Stop();
             await display;
             
 
             monitor.DisplaySingle(sw, documents);//One last time
+
+            if (excelerror.Length > 0)
+            {
+                Console.WriteLine("Could not save metadata (Data lost!)");
+                Console.WriteLine(excelerror);
+            }
         }
     }
 }

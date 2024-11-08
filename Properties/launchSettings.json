@@ -2,7 +2,7 @@
   "profiles": {
     "BetterPDFDownloader": {
       "commandName": "Project",
-      "commandLineArgs": "maxdownloads 100"
+      "commandLineArgs": "maxdownloads 100\r\ntimeout 100\r\nthreads 50\r\noutput Downloads\r\ndata GRI_2017_2020.xlsl\r\nmetadata Metadata2017_2020.xlsx"
     }
   }
 }
