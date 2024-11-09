@@ -27,6 +27,8 @@ Still, since the requirement SPECIFICALLY was for a PDF downloader, it is debata
 
 Please also focus on how readable this Readme file is, and how likely it is that someone who doesn't know my code could use my program based on it.
 
+(Addition, after deadline): Also check if my code is thread-safe (against race-conditions), especially the PDFDocument which may need to be read by the monitor, while it is modified. I have protected all setters with locks, and I believe getters are atomic operations (which I believe to be thread-safe)
+
 NOTE: DO remember to read the "How to start this program" section at in this document, to see what default arguments I use in Visual studio.
 
 
