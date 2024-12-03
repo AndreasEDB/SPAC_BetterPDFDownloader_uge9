@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace BetterPDFDownloader
 {
     //Print a histogram of all the statuses to console once every few milliseconds
-    internal class ConsoleMonitor : IMonitor
+    public class ConsoleMonitor : IMonitor
     {
         //Delay between refreshes
         public int RefreshMillis { get; set; }

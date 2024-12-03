@@ -8,7 +8,7 @@ namespace BetterPDFDownloader
 {
     //A report on the status of a particular download, which can be displayed by the IMonitor
     //It is EXPECTED to be multithreaded, so care need to be taken to avoid RACE CONDITIONS
-    internal interface IReport
+    public interface IReport
     {
         public enum Status { Waiting, Downloading, Checking, Saving, Done, DownloadFailed, CheckingFailed };
         

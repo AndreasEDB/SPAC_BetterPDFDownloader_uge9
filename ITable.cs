@@ -8,7 +8,7 @@ using System.Xml.Linq;
 namespace BetterPDFDownloader
 {
     //Any table, which can contain columns of strings with headers
-    internal interface ITable
+    public interface ITable
     {
         //Read the entire column
         public string[] GetCol(string header);

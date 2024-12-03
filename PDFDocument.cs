@@ -8,7 +8,7 @@ namespace BetterPDFDownloader
 {
     //Container class for a single ongoing or finished PDF download
     //Also contains the URL and fallback
-    internal class PDFDocument : IReport, IComparable<PDFDocument>
+    public class PDFDocument : IReport, IComparable<PDFDocument>
     {
 
         //We do not want anybody reading and writing at the same time

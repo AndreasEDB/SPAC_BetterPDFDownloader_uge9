@@ -7,7 +7,7 @@ using OfficeOpenXml;
 
 namespace BetterPDFDownloader
 {
-    internal class ExcelTable : ITable, IDisposable
+    public class ExcelTable : ITable, IDisposable
     {
         private FileInfo address;
         //The underlying package

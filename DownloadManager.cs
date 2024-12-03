@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace BetterPDFDownloader
 {
     //The class which manage and initiates download, check, and save tasks
-    internal class DownloadManager
+    public class DownloadManager
     {
         private uint MaxThreads;
 

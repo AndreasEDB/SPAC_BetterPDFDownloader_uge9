@@ -10,7 +10,7 @@ namespace BetterPDFDownloader
 {
     //An interface the PDF downloader can use to display, in my case it will print a histogram and some text to the console
     //But it could just as easily be a GUI
-    internal interface IMonitor
+    public interface IMonitor
     {
         //The display is a task, which runs in a thread in the backgroun
         //Initialize the display, by syncing up this stopwatch
