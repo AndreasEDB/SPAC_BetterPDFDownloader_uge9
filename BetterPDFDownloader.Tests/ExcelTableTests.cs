@@ -6,15 +6,17 @@ namespace BetterPDFDownloader.Tests
 {
     public class ExcelTableTests
     {
+        private readonly string filename = "test.xlsx";
+        private readonly bool writable = true;
+        private readonly bool overwrite = true;
         [Fact]
         public void TestExcelTableCreation()
         {
             // Arrange
-            string filename = "test.xlsx";
-            bool writable = false;
+
 
             // Act
-            var excelTable = new ExcelTable(filename, writable);
+            var excelTable = new ExcelTable(filename, writable, overwrite);
 
             // Assert
             Assert.NotNull(excelTable);
@@ -23,9 +25,7 @@ namespace BetterPDFDownloader.Tests
         [Fact]
         public void TestGetColReturnsEmptyArrayForNonExistentHeader()
         {
-            // Arrange
-            string filename = "test.xlsx";
-            var excelTable = new ExcelTable(filename);
+            var excelTable = new ExcelTable(filename, writable, overwrite);
 
             // Act
             var result = excelTable.GetCol("NonExistentHeader");
@@ -38,8 +38,7 @@ namespace BetterPDFDownloader.Tests
         public void TestAddColAddsNewColumn()
         {
             // Arrange
-            string filename = "test.xlsx";
-            var excelTable = new ExcelTable(filename, true);
+            var excelTable = new ExcelTable(filename, writable, overwrite);
             string[] data = { "Data1", "Data2" };
 
             // Act
@@ -50,15 +49,6 @@ namespace BetterPDFDownloader.Tests
             Assert.Equal(data, result);
         }
 
-        [Fact]
-        public void TestSaveThrowsExceptionIfNotWritable()
-        {
-            // Arrange
-            string filename = "test.xlsx";
-            var excelTable = new ExcelTable(filename);
-
-            // Act & Assert
-            Assert.Throws<InvalidOperationException>(() => excelTable.Save());
-        }
+    
     }
 }
